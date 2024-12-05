@@ -1,5 +1,4 @@
 #models.py
-import utils as u
 import pymysql
 import pandas as pd
 
