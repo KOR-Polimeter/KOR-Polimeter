@@ -10,9 +10,15 @@
   wordcloud 모양을 결정할 이미지 파일
 
 
+
 [실행 시 생기는 파일]
 - news_text.txt
   뉴스 크롤링한 내용 저장
   
 - [검색어]_cloud.png
   결과 wordcloud 이미지 파일
+
+
+
+[cloud style test 파일]
+- cloud_output_test.png
