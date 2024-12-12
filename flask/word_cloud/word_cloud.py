@@ -1,8 +1,9 @@
 # 1. 표준 라이브러리
 import os
 import sys
-import urllib.request
 import time
+import json
+import urllib.request
 from collections import Counter
 
 # 2. 외부 라이브러리
@@ -16,7 +17,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from konlpy.tag import Okt
 from wordcloud import WordCloud
-import json
 
 # 3. 로컬 라이브러리
 from PIL import Image
@@ -24,6 +24,7 @@ from PIL import Image
 # 발급받은 naver API id / secret
 client_id = "********************"
 client_secret = "***********"
+
 
 quote = input("검색어를 입력해주세요.: ") # 검색어 입력받기
 print("[INFO] 입력받은 검색어: {}".format(quote))
@@ -133,26 +134,15 @@ for idx, i in enumerate(news_links):
 print("[INFO] 뉴스 본문 크롤링 완료.")
 driver.quit()  # 창닫기 
 
-# 제목 및 본문 txt에 저장
-total_contents = titles + contents
-print("[INFO] 뉴스 제목 및 본문 저장 중...")
-text = open("news_text.txt", 'w', encoding='utf-8') 
-for i in total_contents:
-    text.write(i)
-text.close()
-print("[INFO] 뉴스 제목 및 본문 저장 완료.")
-
-# 제목, 블로그링크, 본문내용 Dataframe으로 만들기
-df = pd.DataFrame({'제목': titles, '링크': news_links, '내용': contents})
-print("[INFO] DataFrame 생성 완료.")
-
-news_text = open('news_text.txt', 'rt', encoding='UTF-8').read()
+# 뉴스 제목과 본문을 결합하여 형태소 분석에 사용할 텍스트 생성
+news_text = ' '.join(titles + contents)
+print("[INFO] 뉴스 제목 및 본문 결합 완료.")
 
 # Okt 함수를 이용해 형태소 분석
 okt = Okt()
 print("[INFO] 형태소 분석 시작...")
-line = []
 
+line = []
 line = okt.pos(news_text)
 
 n_adj = []
