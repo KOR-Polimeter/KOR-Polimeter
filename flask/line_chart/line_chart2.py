@@ -23,18 +23,26 @@ data = pd.DataFrame(data)
 # 'date' 컬럼을 datetime 타입으로 변환
 data['date'] = pd.to_datetime(data['date'])
 
+# 마커를 표시할 위치 계산 (최근 날짜부터 7일 간격)
+markevery = list(reversed(range(len(data) - 1, -1, -7)))
+
+# 마커를 표시한 기간 내 데이터만 사용
+last_marker_date = data['date'].iloc[markevery[0]]
+filtered_data = data[data['date'] >= last_marker_date]
+
+# 필터링된 데이터에 맞춰 새로운 마커 위치 계산
+new_markevery = list(range(len(filtered_data) - 1, -1, -7))
+
 # X축과 Y축 데이터 추출
-x = np.arange(len(data))  # 날짜를 숫자로 변환
-y = data['votes'].values
+x = np.arange(len(filtered_data))  # 날짜를 숫자로 변환
+y = filtered_data['votes'].values
+
+# X축과 Y축 데이터 추출 (정상적으로 날짜 데이터를 인덱스로 사용)
+x = np.arange(len(filtered_data))  # 날짜를 숫자로 변환한 값
 
 # 곡선 보간
 x_smooth = np.linspace(x.min(), x.max(), 300)
-y_smooth = make_interp_spline(x, y)(x_smooth)
-
-# 마커를 표시할 위치 계산 (7일 간격 + 마지막 데이터 포함)
-markevery = list(range(0, len(data), 7))  # 7일 간격으로 표시
-if len(data) - 1 not in markevery:       # 마지막 데이터 포함
-    markevery.append(len(data) - 1)
+y_smooth = make_interp_spline(x, y, bc_type='clamped')(x_smooth)
 
 # 그래프 크기 조정
 plt.figure(figsize=(8, 5))
@@ -43,14 +51,14 @@ plt.figure(figsize=(8, 5))
 plt.plot(x_smooth, y_smooth, color='black', label='Popularity')
 
 # 마커 추가
-plt.scatter(markevery, data['votes'].iloc[markevery], color='black', s=50, zorder=5)
+plt.scatter(new_markevery, filtered_data['votes'].iloc[new_markevery], color='black', s=50, zorder=5)
 
 # y축 범위를 0에서 100으로 설정
 plt.ylim(0, 100)
 
 # x축 눈금을 마커 위치에 해당하는 날짜로 설정
-plt.gca().set_xticks(markevery)  # 마커 위치의 날짜만 눈금으로 설정
-plt.gca().set_xticklabels(data['date'].iloc[markevery].dt.strftime('%Y-%m-%d'), ha='right')
+plt.gca().set_xticks(new_markevery)  # 마커 위치의 날짜만 눈금으로 설정
+plt.gca().set_xticklabels(filtered_data['date'].iloc[new_markevery].dt.strftime('%Y-%m-%d'), ha='right')
 
 # x, y축축 및 폰트 크기
 plt.xticks(fontsize=8, fontweight='bold')

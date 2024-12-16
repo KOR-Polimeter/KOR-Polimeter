@@ -22,8 +22,8 @@ data = pd.DataFrame(data)
 # 'date' 컬럼을 datetime 타입으로 변환
 data['date'] = pd.to_datetime(data['date'])
 
-# 매주(7일 간격) 데이터, 마지막 데이터 추출
-selected_data = data.iloc[list(range(0, len(data), 7)) + [len(data) - 1]]
+# 최근 인기도부터 7일 간격으로 인기도 저장
+selected_data = data.iloc[list(range(len(data) - 1, -1, -7))]
 
 # 그래프 크기 조정
 plt.figure(figsize=(8, 5))

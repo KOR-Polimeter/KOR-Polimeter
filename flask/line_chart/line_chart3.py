@@ -22,22 +22,27 @@ data = pd.DataFrame(data)
 # 'date' 컬럼을 datetime 타입으로 변환
 data['date'] = pd.to_datetime(data['date'])
 
-# 마커를 표시할 위치 계산 (7일 간격 + 마지막 데이터 포함)
-markevery = list(range(0, len(data), 7))  # 7일 간격으로 표시
-if len(data) - 1 not in markevery:       # 마지막 데이터 포함
-    markevery.append(len(data) - 1)
+# 마커를 표시할 위치 계산 (최근 날짜부터 7일 간격)
+markevery = list(reversed(range(len(data) - 1, -1, -7)))
+
+# 마커를 표시한 기간 내 데이터만 사용
+last_marker_date = data['date'].iloc[markevery[0]]
+filtered_data = data[data['date'] >= last_marker_date]
+
+# 필터링된 데이터에 맞춰 새로운 마커 위치 계산
+new_markevery = list(range(len(filtered_data) - 1, -1, -7))
 
 # 그래프 크기 조정
 plt.figure(figsize=(8, 5))
 
-# 데이터 그래프 (마커를 7일마다 표시)
-plt.plot(data['date'], data['votes'], color='black', marker='o', markersize=8, label='Popularity', markevery=markevery)
+# 데이터 그래프
+plt.plot(filtered_data['date'], filtered_data['votes'], color='black', marker='o', markersize=8, label='Popularity', markevery=new_markevery)
 
 # y축 범위를 0에서 100으로 설정
 plt.ylim(0, 100)
 
 # x축 눈금을 마커 위치에 해당하는 날짜로 설정
-plt.gca().set_xticks(data['date'].iloc[markevery])  # 마커 위치의 날짜만 눈금으로 설정
+plt.gca().set_xticks(filtered_data['date'].iloc[new_markevery])  # 마커 위치의 날짜만 눈금으로 설정
 plt.gca().xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))  # 날짜 포맷 설정
 
 # x, y축 폰트 크기
