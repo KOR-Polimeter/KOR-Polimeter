@@ -1,6 +1,5 @@
 # 1. 표준 라이브러리
 import os
-import sys
 import time
 import json
 import urllib.request
