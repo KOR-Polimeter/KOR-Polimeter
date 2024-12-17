@@ -6,18 +6,14 @@ from matplotlib.dates import DateFormatter
 
 sns.set_theme(style="dark")  # Seaborn 스타일 설정
 
-# 예제 데이터
-data = {
-    'date': ['2024-12-01',
-             '2024-12-08',
-             '2024-12-15',
-             '2024-12-22'
-             ],
-    'votes': [55, 60, 57, 62]
-}
+# Seaborn 스타일 설정
+sns.set_theme(style="dark")
 
-# 리스트를 DataFrame으로 변환
-data = pd.DataFrame(data)
+# 예제 데이터
+data = pd.DataFrame({
+    'date': ['2024-12-01', '2024-12-08', '2024-12-15', '2024-12-22'],
+    'votes': [55, 60, 57, 62]
+})
 
 # 'date' 컬럼을 datetime 타입으로 변환
 data['date'] = pd.to_datetime(data['date'])
@@ -31,9 +27,10 @@ plt.plot(data['date'], data['votes'], color='black', marker='o', markersize=8, l
 # y축 범위를 0에서 100으로 설정
 plt.ylim(0, 100)
 
-plt.gca().xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))  # 날짜 포맷 설정
+# 날짜 포맷 설정
+plt.gca().xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
 
-# x, Y축 폰트 크기
+# x, y축 폰트 크기
 plt.xticks(data['date'], fontsize=8, fontweight='bold')
 plt.yticks(range(0, 101, 10), fontsize=10, fontweight='bold')
 
