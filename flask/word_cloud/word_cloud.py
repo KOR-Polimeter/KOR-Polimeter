@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -75,14 +76,14 @@ print("[INFO] Selenium WebDriver 초기화 완료.")
 
 # 각 이름마다 워드 클라우드 생성
 for name in names:
-    if not name.strip():  # 빈 줄은 건너뛰기
+    if not name.strip():
         continue
 
     quote = name + " 의원"  # 의원 이름에 "의원" 추가
     print(f"[INFO] 검색어: {quote}")
     encText = urllib.parse.quote(quote)
 
-    display = "10"  # 표시할 검색 결과 개수 설정
+    display = "20"  # 표시할 검색 결과 개수 설정
     sort = "sim"  # 관련성순
     url = f"https://openapi.naver.com/v1/search/news?query={encText}&display={display}&sort={sort}"  # JSON 결과
     print("[INFO] 네이버 API 요청 URL 생성 완료.")
@@ -155,13 +156,10 @@ for name in names:
                 contents.append("")
 
         except TimeoutException as e:
-            print(f"\n[ERROR] {idx+1}번째 페이지 로딩 타임아웃: {e}")
             contents.append("")  # 빈 내용 추가하고 다음으로 넘어감
         except WebDriverException as e:
-            print(f"\n[ERROR] {idx+1}번째 페이지 크롤링 중 WebDriver 오류: {e}")
             contents.append("")  # 빈 내용 추가하고 다음으로 넘어감
         except Exception as e:
-            print(f"\n[ERROR] {idx+1}번째 뉴스 크롤링 중 오류 발생: {e}")
             contents.append("")  # 빈 내용 추가하고 다음으로 넘어감
 
     print("[INFO] 뉴스 본문 크롤링 완료.")
@@ -176,8 +174,8 @@ for name in names:
     line = okt.pos(news_text)
 
     # 명사 또는 형용사만 필터링 + 불용어 제거 + 최소 길이 조건
-    stopwords = {'라며', '그리고', '그러나', '하지만', '에서', '에게', '중에', '위해', '조차', '까지', '어디', '무엇', '누구', '생각', '대해', '때문', '사실', '당시', '만약', '이제', '지금', '말씀', '그것', '이것', '저것', '어떤',
-                 '부분', '그런', '그거', '계속', '만날', '얘기', '이런',  '우리', '어느', '있다', '있는', '입니다', '경우', '있습니다', '최근', '이번', '시간', '지난', '소식', '통해', '사진', '무단', '재', '및', '배포', '금지'}
+    stopwords = {'라며', '그리고', '그러나', '하지만', '에서', '에게', '중에', '위해', '조차', '까지', '어디', '무엇', '무슨', '모두', '누구', '생각', '대해', '때문', '사실', '당시', '만약', '이제', '지금', '말씀', '그것', '이것', '저것', '어떤',
+                 '부분', '그런', '그거', '그날', '계속', '만날', '얘기', '이런',  '우리', '어느', '있다', '있는', '입니다', '경우', '있습니다', '최근', '이번', '시간', '지난', '소식', '통해', '사진', '무단', '재', '및', '배포', '금지'}
     n_adj = [word for word, tag in line if tag in ['Noun', 'Adjective'] and len(word) > 1 and word not in stopwords]
 
     # 단어 빈도수 계산
@@ -185,8 +183,8 @@ for name in names:
     print("[INFO] 단어 빈도수 계산 완료.")
 
     # 상위 50개 단어 추출
-    tags = word_count.most_common(50)
-    print(f"[INFO] 상위 50개 단어 추출 완료 for {name}.")
+    tags = word_count.most_common(20)
+    print(f"[INFO] 상위 20개 단어 추출 완료 for {name}.")
 
     # 워드 클라우드 모양 이미지 경로 설정
     img_name = 'cloud.png'
